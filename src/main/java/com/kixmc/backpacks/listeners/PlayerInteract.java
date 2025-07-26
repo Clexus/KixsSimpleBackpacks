@@ -1,6 +1,7 @@
 package com.kixmc.backpacks.listeners;
 
 import com.kixmc.backpacks.contents.ItemHandler;
+import com.kixmc.backpacks.core.BackpackInventory;
 import com.kixmc.backpacks.core.SimpleBackpacks;
 import com.kixmc.backpacks.core.BackpackItem;
 import com.kixmc.backpacks.utils.BackpackUtils;
@@ -8,6 +9,7 @@ import com.kixmc.backpacks.utils.ChatUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -21,6 +23,7 @@ import org.bukkit.persistence.PersistentDataType;
 import java.util.ArrayList;
 
 public class PlayerInteract implements Listener {
+    FileConfiguration config = SimpleBackpacks.get().getConfig();
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onInteract(PlayerInteractEvent e) {
@@ -31,15 +34,17 @@ public class PlayerInteract implements Listener {
 
             ItemStack is = e.getPlayer().getInventory().getItemInMainHand();
 
+            
+            String id = BackpackUtils.getId(is);
             if (BackpackUtils.isUnopenedBackpack(is)) {
 
                 is.setAmount(is.getAmount() - 1);
 
-                e.getPlayer().getInventory().addItem(BackpackItem.makeNew());
+                e.getPlayer().getInventory().addItem(BackpackItem.makeNew(id));
 
-                String unboxMsg = SimpleBackpacks.get().getConfig().getString("backpack.messages.unboxed");
+                String unboxMsg = config.getString("backpack."+id+".messages.unboxed");
                 if (!unboxMsg.isEmpty()) {
-                    e.getPlayer().sendMessage(ChatUtil.colorize(SimpleBackpacks.get().getConfig().getString("backpack.messages.unboxed")));
+                    e.getPlayer().sendMessage(ChatUtil.colorize(config.getString("backpack."+id+".messages.unboxed")));
                 }
 
                 return;
@@ -49,21 +54,21 @@ public class PlayerInteract implements Listener {
 
                 ItemMeta im = is.getItemMeta();
 
-                is.setType(Material.valueOf(SimpleBackpacks.get().getConfig().getString("backpack.material")));
+                is.setType(Material.valueOf(config.getString("backpack."+id+".material")));
 
                 if (BackpackUtils.hasKey(is, "kixs-backpacks-custom-name", PersistentDataType.STRING)) {
-                    im.setDisplayName(ChatUtil.colorize(SimpleBackpacks.get().getConfig().getString("backpack.name.renamed").replace("{CUSTOM_NAME}", im.getPersistentDataContainer().get(new NamespacedKey(SimpleBackpacks.get(), "kixs-backpacks-custom-name"), PersistentDataType.STRING))));
+                    im.displayName(ChatUtil.colorize(config.getString("backpack."+id+".name.renamed").replace("%CUSTOM_NAME%", im.getPersistentDataContainer().get(new NamespacedKey(SimpleBackpacks.get(), "kixs-backpacks-custom-name"), PersistentDataType.STRING))));
                 }
 
                 is.setItemMeta(im);
 
                 ArrayList<ItemStack> contents = ItemHandler.get(is);
 
-                Inventory backpack = Bukkit.createInventory(e.getPlayer(), (SimpleBackpacks.get().getConfig().getInt("backpack.rows") * 9), SimpleBackpacks.get().getConfig().getString("backpack.gui-title"));
+                Inventory backpack = new BackpackInventory(SimpleBackpacks.get(), config.getInt("backpack."+id+".rows") * 9, config.getString("backpack."+id+".gui-title")).getInventory();
 
                 ArrayList<ItemStack> itemOverflow = new ArrayList<>();
 
-                boolean canHoldShulkerBoxes = SimpleBackpacks.get().getConfig().getBoolean("backpack.allow-shulker-boxes-in-backpacks");
+                boolean canHoldShulkerBoxes = config.getBoolean("backpack."+id+".allow-shulker-boxes-in-backpacks");
 
                 for (ItemStack itemStack : contents) {
                     if(!canHoldShulkerBoxes && itemStack.getType().toString().contains("SHULKER_BOX")) {

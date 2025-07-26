@@ -1,0 +1,79 @@
+# KixsSimpleBackpacks config
+# Colorcode and hex (for 1.16+) support: & for colorcodes, &# for hex
+backpack:
+  1:
+    material: CHEST
+    rows: 2
+    custom-model-data: 10000 #留空不应用
+    item-model: "minecraft:stone" #留空不应用
+    gui-title: "Contents"
+    allow-shulker-boxes-in-backpacks: false
+    allow-backpacks-in-shulker-boxes: false
+    name:
+      regular: "&eBackpack &7(right-click)"
+      renamed: "&e%CUSTOM_NAME% &7(right-click)"
+      unopened: "&eUnopened Backpack"
+    lore:
+      new:
+        - " "
+        - "&bBrand new, &b&nright click&b to unbox!"
+        - " "
+        - "&f&lTIP &7If you're planning on having"
+        - "&7multiple packs, you can name them"
+        - "&7in anvils for better organization!"
+        - " "
+      empty:
+        - " "
+        - "&6%SLOTS_IN_USE%/%MAX_SLOTS% &fslots in use"
+        - " "
+      storing:
+        - " "
+        - "&6%SLOTS_IN_USE%/%MAX_SLOTS% &fslots in use"
+        - " "
+        - "%CONTENTS_PREVIEW%"
+      contents-preview: " &f- &7&o%ITEM_AMOUNT% x &f&o%ITEM_NAME%"
+      preview-overflow:
+        - " "
+        - " &f&oand &7&o%REMAINING_CONTENTS_SLOT_COUNT% &f&omore..."
+        - " "
+      preview-slots-size: 5
+    messages:
+      unboxed: "&7Backpack unboxed! &bRight click&7 it to open!"
+  2:
+    material: CHEST
+    rows: 3
+    custom-model-data: 10000 #留空不应用
+    item-model: "minecraft:stone" #留空不应用
+    gui-title: "Contents"
+    allow-shulker-boxes-in-backpacks: false
+    allow-backpacks-in-shulker-boxes: false
+    name:
+      regular: "&eBackpack &7(right-click)"
+      renamed: "&e%CUSTOM_NAME% &7(right-click)"
+      unopened: "&eUnopened Backpack"
+    lore:
+      new:
+        - " "
+        - "&bBrand new, &b&nright click&b to unbox!"
+        - " "
+        - "&f&lTIP &7If you're planning on having"
+        - "&7multiple packs, you can name them"
+        - "&7in anvils for better organization!"
+        - " "
+      empty:
+        - " "
+        - "&6%SLOTS_IN_USE%/%MAX_SLOTS% &fslots in use"
+        - " "
+      storing:
+        - " "
+        - "&6%SLOTS_IN_USE%/%MAX_SLOTS% &fslots in use"
+        - " "
+        - "%CONTENTS_PREVIEW%"
+      contents-preview: " &f- &7%ITEM_AMOUNT% x &f%ITEM_NAME%"
+      preview-overflow:
+        - " "
+        - " &f&oand &7&o%REMAINING_CONTENTS_SLOT_COUNT% &f&omore..."
+        - " "
+      preview-slots-size: 5
+    messages:
+      unboxed: "&7Backpack unboxed! &bRight click&7 it to open!"

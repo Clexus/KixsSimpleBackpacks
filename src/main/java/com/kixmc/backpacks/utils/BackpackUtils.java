@@ -15,7 +15,12 @@ public class BackpackUtils {
         if (is == null) return false;
         if (is.getType() == Material.AIR) return false;
 
-        return hasKey(is, "kixs-backpacks", PersistentDataType.STRING);
+        return hasKey(is, "kixs-backpacks", PersistentDataType.BYTE_ARRAY);
+    }
+
+    public static String getId(ItemStack is){
+        if(is == null || is.isEmpty() || !hasKey(is, "kixs-backpacks-id", PersistentDataType.STRING)) return null;
+        return is.getPersistentDataContainer().get(new NamespacedKey(SimpleBackpacks.get(), "kixs-backpacks-id"), PersistentDataType.STRING);
     }
 
     public static boolean isUnopenedBackpack(ItemStack is) {
