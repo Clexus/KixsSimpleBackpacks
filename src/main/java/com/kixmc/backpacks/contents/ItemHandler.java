@@ -18,19 +18,21 @@ import org.jetbrains.annotations.NotNull;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class ItemHandler {
 
-    public static void store(ItemStack backpack, List<ItemStack> contents) {
+    public static void store(ItemStack backpack, ItemStack[] contents) {
 
         if (!backpack.hasItemMeta()) return;
 
         ItemMeta itemMeta = backpack.getItemMeta();
         PersistentDataContainer data = itemMeta.getPersistentDataContainer();
+
+        List<ItemStack> contentsList = Arrays.stream(contents)
+                .filter(Objects::nonNull)
+                .toList();
 
         String id = BackpackUtils.getId(backpack);
 
@@ -38,7 +40,7 @@ public class ItemHandler {
             data.set(new NamespacedKey(SimpleBackpacks.get(), "kixs-backpacks"), PersistentDataType.BYTE_ARRAY, new byte[0]);
         }
 
-        if (contents.isEmpty()) {
+        if (contentsList.isEmpty()) {
             data.set(new NamespacedKey(SimpleBackpacks.get(), "kixs-backpacks"), PersistentDataType.BYTE_ARRAY, new byte[0]);
 
             ArrayList<Component> lore = new ArrayList<>();
@@ -64,20 +66,20 @@ public class ItemHandler {
             int counter = 0;
             for (int i = 0; i < previewSize; i++) {
                 try {
-                    contents.get(i);
+                    contentsList.get(i);
                 } catch (Exception ignored) { continue; }
 
-                if (contents.get(i).getType() == Material.AIR) return;
+                if (contentsList.get(i).isEmpty()) return;
 
                 counter++;
-                contentsPreview.add(ChatUtil.colorize(SimpleBackpacks.get().getConfig().getString("backpack."+id+".lore.contents-preview").replace("%ITEM_AMOUNT%", Integer.toString(contents.get(i).getAmount()))).replaceText(TextReplacementConfig.builder()
-                                .match("%ITEM_NAME%").replacement(contents.get(i).effectiveName())
+                contentsPreview.add(ChatUtil.colorize(SimpleBackpacks.get().getConfig().getString("backpack."+id+".lore.contents-preview").replace("%ITEM_AMOUNT%", Integer.toString(contentsList.get(i).getAmount()))).replaceText(TextReplacementConfig.builder()
+                                .match("%ITEM_NAME%").replacement(contentsList.get(i).effectiveName())
                         .build()));
 
             }
 
-            if (contents.size() > previewSize) {
-                for (String loreLine : SimpleBackpacks.get().getConfig().getStringList("backpack."+id+".lore.preview-overflow")) { contentsPreview.add(ChatUtil.colorize(loreLine).replaceText( TextReplacementConfig.builder().match("%REMAINING_CONTENTS_SLOT_COUNT%").replacement(Integer.toString((contents.size() - counter))).build())); }
+            if (contentsList.size() > previewSize) {
+                for (String loreLine : SimpleBackpacks.get().getConfig().getStringList("backpack."+id+".lore.preview-overflow")) { contentsPreview.add(ChatUtil.colorize(loreLine).replaceText( TextReplacementConfig.builder().match("%REMAINING_CONTENTS_SLOT_COUNT%").replacement(Integer.toString((contentsList.size() - counter))).build())); }
             }
 
             ArrayList<Component> lore = new ArrayList<>();
@@ -88,7 +90,7 @@ public class ItemHandler {
                     lore.addAll(index, contentsPreview);
                     continue;
                 }
-                lore.add(ChatUtil.colorize(loreLine.replace("%SLOTS_IN_USE%", Integer.toString(contents.size())).replace("%MAX_SLOTS%", Integer.toString(SimpleBackpacks.get().getConfig().getInt("backpack."+id+".rows") * 9))));
+                lore.add(ChatUtil.colorize(loreLine.replace("%SLOTS_IN_USE%", Integer.toString(contentsList.size())).replace("%MAX_SLOTS%", Integer.toString(SimpleBackpacks.get().getConfig().getInt("backpack."+id+".rows") * 9))));
                 index++;
             }
             backpack.setItemMeta(itemMeta);
@@ -96,19 +98,19 @@ public class ItemHandler {
 
     }
 
-    public static ArrayList<ItemStack> get(ItemStack backpack) {
+    public static ItemStack[] get(ItemStack backpack) {
 
-        if (!backpack.hasItemMeta()) new ArrayList<ItemStack>();
+        if (!backpack.hasItemMeta()) return new ItemStack[0];
 
         ItemMeta itemMeta = backpack.getItemMeta();
         PersistentDataContainer data = itemMeta.getPersistentDataContainer();
 
-        ArrayList<ItemStack> items = new ArrayList<>();
+        ItemStack[] items = new ItemStack[0];
 
         byte[] encodedItems = data.get(new NamespacedKey(SimpleBackpacks.get(), "kixs-backpacks"), PersistentDataType.BYTE_ARRAY);
 
         if (encodedItems != null && encodedItems.length > 0) {
-            items.addAll(List.of(ItemStack.deserializeItemsFromBytes(encodedItems)));
+            items = ItemStack.deserializeItemsFromBytes(encodedItems);
         }
 
         return items;

@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -62,7 +63,7 @@ public class PlayerInteract implements Listener {
 
                 is.setItemMeta(im);
 
-                ArrayList<ItemStack> contents = ItemHandler.get(is);
+                ItemStack[] contents = ItemHandler.get(is);
 
                 Inventory backpack = new BackpackInventory(SimpleBackpacks.get(), config.getInt("backpack."+id+".rows") * 9, config.getString("backpack."+id+".gui-title")).getInventory();
 
@@ -70,13 +71,13 @@ public class PlayerInteract implements Listener {
 
                 boolean canHoldShulkerBoxes = config.getBoolean("backpack."+id+".allow-shulker-boxes-in-backpacks");
 
-                for (ItemStack itemStack : contents) {
+                for (int i = 0; i < contents.length; i++) {
+                    ItemStack itemStack = contents[i];
                     if(!canHoldShulkerBoxes && itemStack.getType().toString().contains("SHULKER_BOX")) {
                         itemOverflow.add(itemStack);
                         continue;
                     }
-                    if (backpack.addItem(itemStack).isEmpty()) continue;
-                    itemOverflow.add(itemStack);
+                    backpack.setItem(i, itemStack);
                 }
 
                 for (ItemStack itemStack : itemOverflow) {

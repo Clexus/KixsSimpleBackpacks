@@ -25,9 +25,7 @@ public class InventoryClose implements Listener {
         if (!(BackpackUtils.isBackpack(e.getPlayer().getInventory().getItemInMainHand()) && e.getInventory().getHolder(false) instanceof BackpackInventory))
             return;
 
-        ItemHandler.store(e.getPlayer().getInventory().getItemInMainHand(), Arrays.stream(e.getInventory().getContents())
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList()));
+        ItemHandler.store(e.getPlayer().getInventory().getItemInMainHand(), e.getInventory().getContents());
     }
 
 }

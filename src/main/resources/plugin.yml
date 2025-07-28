@@ -1,6 +1,6 @@
 name: KixsSimpleBackpacks
 author: kixmc
-version: 1.1.0
+version: ${version}
 main: com.kixmc.backpacks.core.SimpleBackpacks
 api-version: 1.16
 commands:
